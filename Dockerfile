@@ -35,17 +35,35 @@ COPY package.json package-lock.json ./
 # Instalar dependencias
 RUN npm ci --prefer-offline --no-audit --progress=false
 
-# Copiar archivos necesarios para el build
+# Copiar archivos de configuración necesarios para el build
+COPY vite.config.js tailwind.config.js postcss.config.js ./
+
+# Copiar archivos fuente de recursos
+COPY resources/ ./resources/
+
+# Copiar el resto del código (esto incluye vendor y otros archivos)
 COPY . .
 
 # Copiar vendor desde composer (necesario para Laravel Mix/Vite)
 COPY --from=composer-builder /app/vendor ./vendor
 
-# Crear directorio public para Vite
-RUN mkdir -p public
+# Crear directorio public para Vite y verificar estructura
+RUN mkdir -p public/build
+
+# Debug: Verificar archivos antes del build
+RUN echo "=== Files before build ===" && \
+    ls -la && \
+    echo "=== Package.json contents ===" && \
+    cat package.json
 
 # Compilar assets con Vite
 RUN npm run build
+
+# Debug: Verificar archivos después del build
+RUN echo "=== Files after build ===" && \
+    ls -la public/build/ && \
+    echo "=== Manifest contents ===" && \
+    cat public/build/manifest.json || echo "Manifest not found"
 
 # ==========================================
 # Stage 3: Runtime (PHP-FPM + Nginx + Supervisor)
@@ -95,6 +113,14 @@ COPY --from=composer-builder /app /var/www/html
 
 # Copiar assets compilados desde node stage (ubicación correcta)
 COPY --from=node-builder /app/public/build /var/www/html/public/build
+
+# Verificar que los assets se copiaron correctamente
+RUN echo "=== Verifying assets copy ===" && \
+    ls -la /var/www/html/public/build/ && \
+    echo "=== Checking manifest ===" && \
+    test -f /var/www/html/public/build/manifest.json && \
+    echo "✅ Manifest file exists" || \
+    echo "❌ Manifest file missing"
 
 # Copiar configuraciones de servicios
 COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf

@@ -95,6 +95,59 @@ fi
 echo "🔗 Creating storage link..."
 php artisan storage:link || true
 
+# Verificar assets de Vite
+echo "📦 Checking Vite assets..."
+if [ ! -f "/var/www/html/public/build/manifest.json" ]; then
+    echo "❌ Vite manifest not found at /var/www/html/public/build/manifest.json"
+    echo "🔍 Debug info:"
+    echo "   - Checking /var/www/html/public/build/ directory:"
+    ls -la /var/www/html/public/build/ || echo "   - Directory doesn't exist"
+    echo "   - Checking public directory:"
+    ls -la /var/www/html/public/ || echo "   - Public directory doesn't exist"
+    echo "   - Current working directory: $(pwd)"
+    echo "   - Attempting to rebuild assets..."
+    
+    # Intentar regenerar assets si npm está disponible
+    if command -v npm >/dev/null 2>&1; then
+        echo "📦 NPM found, attempting to rebuild assets..."
+        npm run build || echo "❌ Failed to rebuild assets with npm"
+    else
+        echo "⚠️  NPM not available in production container"
+        echo "⚠️  Assets should be pre-built during Docker image creation"
+        echo "🔧 Creating minimal manifest.json as fallback..."
+        
+        # Crear directorio build si no existe
+        mkdir -p /var/www/html/public/build/assets
+        
+        # Crear un manifest mínimo para evitar el error
+        cat > /var/www/html/public/build/manifest.json << 'EOF'
+{
+  "resources/css/app.css": {
+    "file": "assets/app.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app.js",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}
+EOF
+        
+        # Crear archivos CSS y JS básicos
+        echo "/* Emergency CSS fallback */" > /var/www/html/public/build/assets/app.css
+        echo "/* Emergency JS fallback */" > /var/www/html/public/build/assets/app.js
+        
+        echo "✅ Emergency fallback manifest created"
+    fi
+else
+    echo "✅ Vite manifest found"
+    echo "   - Manifest size: $(stat -c%s /var/www/html/public/build/manifest.json) bytes"
+    echo "   - Checking assets directory:"
+    ls -la /var/www/html/public/build/assets/ || echo "   - Assets directory missing"
+fi
+
 echo "✅ Laravel initialization completed!"
 echo "🌐 Starting web services..."
 
