@@ -1,0 +1,47 @@
+# Dependencias
+node_modules/
+vendor/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Variables de entorno
+.env
+.env.*
+!.env.example
+
+# Assets compilados (se generan en build)
+public/build/
+public/hot
+dist/
+
+# Storage
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+
+# Cache
+bootstrap/cache/*
+.phpunit.result.cache
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+tests/
+phpunit.xml
+
+# Documentación
+*.md
+!README.md
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
