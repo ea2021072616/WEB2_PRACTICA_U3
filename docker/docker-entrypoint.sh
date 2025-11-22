@@ -8,14 +8,47 @@ mkdir -p /var/log/supervisor
 mkdir -p /var/log/nginx
 
 # Esperar a que la base de datos esté lista (opcional)
-if [ ! -z "$DB_HOST" ]; then
-    echo "⏳ Waiting for database to be ready..."
-    until nc -z -v -w30 $DB_HOST ${DB_PORT:-3306}
-    do
-        echo "Waiting for database connection..."
-        sleep 5
-    done
+wait_for_db() {
+    host="$1"
+    port="${2:-3306}"
+    max_retries=24  # 24 * 5s = 120s por defecto
+    retry=0
+
+    echo "⏳ Waiting for database to be ready at $host:$port..."
+
+    if command -v nc >/dev/null 2>&1; then
+        # Usar nc si está disponible
+        while ! nc -z -v -w5 "$host" "$port" >/dev/null 2>&1; do
+            retry=$((retry+1))
+            echo "Waiting for database connection... ($retry/$max_retries)"
+            if [ "$retry" -ge "$max_retries" ]; then
+                echo "❌ Database did not become ready in time" >&2
+                return 1
+            fi
+            sleep 5
+        done
+    else
+        # Fallback a bash /dev/tcp (requiere bash)
+        while ! (echo > /dev/tcp/"$host"/"$port") >/dev/null 2>&1; do
+            retry=$((retry+1))
+            echo "Waiting for database connection... ($retry/$max_retries)"
+            if [ "$retry" -ge "$max_retries" ]; then
+                echo "❌ Database did not become ready in time" >&2
+                return 1
+            fi
+            sleep 5
+        done
+    fi
+
     echo "✅ Database is ready!"
+    return 0
+}
+
+if [ ! -z "$DB_HOST" ]; then
+    if ! wait_for_db "$DB_HOST" "${DB_PORT:-3306}"; then
+        echo "Database check failed, exiting." >&2
+        exit 1
+    fi
 fi
 
 # Configurar permisos correctos para storage y cache
