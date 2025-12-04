@@ -27,7 +27,7 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-        
+
         // Limpiar cualquier URL "intended" guardada que pueda estar malformada
         $request->session()->forget('url.intended');
 

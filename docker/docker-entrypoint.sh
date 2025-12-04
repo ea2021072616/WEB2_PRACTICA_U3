@@ -74,7 +74,7 @@ if [ "$APP_ENV" = "production" ]; then
     echo "⚡ Optimizing for production..."
     php artisan config:cache
     # NO cachear rutas - se generarán dinámicamente con la URL correcta
-    # php artisan route:cache  
+    # php artisan route:cache
     php artisan view:cache
 fi
 
@@ -119,12 +119,12 @@ if [ ! -f "/var/www/html/public/build/manifest.json" ]; then
     ls -la /var/www/html/public/build/.vite/ 2>/dev/null || echo "   - .vite directory doesn't exist"
     echo "   - Checking public directory:"
     ls -la /var/www/html/public/ 2>/dev/null || echo "   - Public directory doesn't exist"
-    
+
     echo "🔧 Creating minimal manifest.json as fallback..."
-    
+
     # Crear directorio build si no existe
     mkdir -p /var/www/html/public/build/assets
-    
+
     # Crear un manifest mínimo para evitar el error
     cat > /var/www/html/public/build/manifest.json << 'EOF'
 {
@@ -140,11 +140,11 @@ if [ ! -f "/var/www/html/public/build/manifest.json" ]; then
   }
 }
 EOF
-    
+
     # Crear archivos CSS y JS básicos si no existen
     [ ! -f /var/www/html/public/build/assets/app.css ] && echo "/* Fallback CSS */" > /var/www/html/public/build/assets/app.css
     [ ! -f /var/www/html/public/build/assets/app.js ] && echo "/* Fallback JS */" > /var/www/html/public/build/assets/app.js
-    
+
     echo "✅ Fallback manifest created"
 else
     echo "✅ Vite manifest found"

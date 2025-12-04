@@ -24,11 +24,27 @@ class AppServiceProvider extends ServiceProvider
         if ($this->isRunningBehindProxy()) {
             URL::forceScheme('https');
 
-            // Construir la URL correcta basada en el host del request
-            $host = $_SERVER['HTTP_X_FORWARDED_HOST']
-                ?? $_SERVER['HTTP_HOST']
-                ?? parse_url(config('app.url'), PHP_URL_HOST)
-                ?? 'localhost';
+            // Obtener el host - verificar que no esté vacío
+            $host = null;
+
+            // Intentar HTTP_X_FORWARDED_HOST primero
+            if (!empty($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+                $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
+            }
+            // Luego HTTP_HOST
+            elseif (!empty($_SERVER['HTTP_HOST'])) {
+                $host = $_SERVER['HTTP_HOST'];
+            }
+            // Finalmente, extraer del APP_URL configurado
+            else {
+                $appUrl = env('APP_URL', config('app.url'));
+                $host = parse_url($appUrl, PHP_URL_HOST);
+            }
+
+            // Si aún no tenemos host, usar el de Render directamente
+            if (empty($host)) {
+                $host = 'web2-practica-u3.onrender.com';
+            }
 
             // Limpiar el host de cualquier cosa extra
             $host = preg_replace('/[^a-zA-Z0-9\.\-]/', '', $host);
