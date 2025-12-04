@@ -20,29 +20,34 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Para Render y otros servicios de hosting, detectar HTTPS del proxy
-        $forwardedProto = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? null;
-        $isHttps = $forwardedProto === 'https' 
-            || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');
-        
-        if ($isHttps) {
+        // Para Render y otros servicios de hosting con proxy reverso
+        if ($this->isRunningBehindProxy()) {
             URL::forceScheme('https');
-        }
-
-        // Forzar la URL raíz en producción para evitar URLs malformadas
-        if (app()->environment('production')) {
-            $appUrl = config('app.url');
             
-            // Asegurarse de que APP_URL tenga el formato correcto
-            if ($appUrl && !str_starts_with($appUrl, 'http://') && !str_starts_with($appUrl, 'https://')) {
-                // Si falta el protocolo completo, agregarlo
-                $appUrl = 'https://' . ltrim($appUrl, 'https:/http:/');
-                config(['app.url' => $appUrl]);
-            }
+            // Construir la URL correcta basada en el host del request
+            $host = $_SERVER['HTTP_X_FORWARDED_HOST'] 
+                ?? $_SERVER['HTTP_HOST'] 
+                ?? parse_url(config('app.url'), PHP_URL_HOST) 
+                ?? 'localhost';
             
-            if ($appUrl) {
-                URL::forceRootUrl($appUrl);
-            }
+            // Limpiar el host de cualquier cosa extra
+            $host = preg_replace('/[^a-zA-Z0-9\.\-]/', '', $host);
+            
+            $rootUrl = 'https://' . $host;
+            URL::forceRootUrl($rootUrl);
+            config(['app.url' => $rootUrl]);
         }
+    }
+    
+    /**
+     * Detectar si estamos detrás de un proxy (Render, Cloudflare, etc.)
+     */
+    private function isRunningBehindProxy(): bool
+    {
+        $forwardedProto = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? null;
+        
+        return $forwardedProto === 'https' 
+            || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+            || app()->environment('production');
     }
 }
