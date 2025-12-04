@@ -14,38 +14,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// DEBUG TEMPORAL - Ver qué URLs se generan
-Route::get('/debug-urls', function () {
-    return response()->json([
-        'app_url' => config('app.url'),
-        'request_url' => request()->url(),
-        'request_root' => request()->root(),
-        'route_dashboard' => route('dashboard'),
-        'url_to_dashboard' => url('/dashboard'),
-        'env' => app()->environment(),
-        'https' => request()->secure(),
-        'headers' => [
-            'host' => request()->header('host'),
-            'x-forwarded-proto' => request()->header('x-forwarded-proto'),
-            'x-forwarded-host' => request()->header('x-forwarded-host'),
-        ]
-    ]);
-});
-
 Route::middleware(['auth', 'verified', 'upt.email'])->group(function () {
-    // RUTA TEMPORAL PARA DEBUG - ELIMINAR DESPUÉS
-    Route::get('/verificar-rol', function () {
-        $user = auth()->user();
-        return response()->json([
-            'nombre' => $user->name,
-            'email' => $user->email,
-            'rol' => $user->role,
-            'es_admin' => $user->isAdmin(),
-            'es_docente' => $user->isDocente(),
-            'es_estudiante' => $user->isEstudiante(),
-        ]);
-    });
-
     // Redirigir dashboard según el rol
     Route::get('/dashboard', function () {
         $user = auth()->user();
@@ -70,7 +39,7 @@ Route::middleware(['auth', 'verified', 'upt.email'])->group(function () {
     // Rutas para Docente y Admin (gestión de atenciones)
     Route::middleware(['role:docente,admin'])->group(function () {
         Route::get('/docente/dashboard', [DocenteDashboardController::class, 'index'])->name('docente.dashboard');
-        Route::resource('atenciones', AtencionController::class)->except(['destroy']);
+        Route::resource('atenciones', AtencionController::class)->except(['destroy'])->parameters(['atenciones' => 'atencion']);
     });
 
     // Solo admin puede eliminar atenciones

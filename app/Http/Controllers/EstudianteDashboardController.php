@@ -13,6 +13,11 @@ class EstudianteDashboardController extends Controller
     {
         $estudiante = Auth::user()->estudiante;
 
+        // Si el usuario no tiene estudiante asociado, redirigir
+        if (!$estudiante) {
+            return redirect()->route('dashboard')->with('error', 'No tienes un perfil de estudiante asociado.');
+        }
+
         $stats = [
             'total_atenciones' => Atencion::where('estudiante_id', $estudiante->id)->count(),
             'atenciones_semestre' => Atencion::where('estudiante_id', $estudiante->id)

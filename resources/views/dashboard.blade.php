@@ -79,10 +79,10 @@
                         @foreach($recientesAtenciones as $atencion)
                             <div class="mb-3 pb-3 border-b">
                                 <div class="text-sm font-semibold" style="color: #333333;">
-                                    {{ $atencion->estudiante->nombres }} {{ $atencion->estudiante->apellidos }}
+                                    {{ $atencion->estudiante?->nombres ?? 'N/A' }} {{ $atencion->estudiante?->apellidos ?? '' }}
                                 </div>
                                 <div class="text-xs" style="color: #666;">
-                                    {{ $atencion->tema->nombre }} - {{ $atencion->fecha->format('d/m/Y') }}
+                                    {{ $atencion->tema?->nombre ?? 'Sin tema' }} - {{ $atencion->fecha ? $atencion->fecha->format('d/m/Y') : 'Sin fecha' }}
                                 </div>
                             </div>
                         @endforeach

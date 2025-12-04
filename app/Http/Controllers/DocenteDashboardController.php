@@ -15,6 +15,11 @@ class DocenteDashboardController extends Controller
     {
         $docente = Auth::user()->docente;
 
+        // Si el usuario no tiene docente asociado, redirigir
+        if (!$docente) {
+            return redirect()->route('dashboard')->with('error', 'No tienes un perfil de docente asociado.');
+        }
+
         $stats = [
             'total_atenciones' => Atencion::where('docente_id', $docente->id)->count(),
             'atenciones_mes' => Atencion::where('docente_id', $docente->id)

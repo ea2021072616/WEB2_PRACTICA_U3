@@ -58,11 +58,11 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach($atenciones as $atencion)
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap" style="color: #333333;">{{ $atencion->semestre }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap" style="color: #333333;">{{ $atencion->fecha->format('d/m/Y') }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap" style="color: #333333;">{{ $atencion->estudiante->nombres }} {{ $atencion->estudiante->apellidos }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap" style="color: #333333;">{{ $atencion->docente->nombres }} {{ $atencion->docente->apellidos }}</td>
-                                        <td class="px-6 py-4" style="color: #333333;">{{ $atencion->tema->nombre }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap" style="color: #333333;">{{ $atencion->semestre ?? 'N/A' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap" style="color: #333333;">{{ $atencion->fecha ? $atencion->fecha->format('d/m/Y') : 'Sin fecha' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap" style="color: #333333;">{{ $atencion->estudiante?->nombres ?? 'N/A' }} {{ $atencion->estudiante?->apellidos ?? '' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap" style="color: #333333;">{{ $atencion->docente?->nombres ?? 'N/A' }} {{ $atencion->docente?->apellidos ?? '' }}</td>
+                                        <td class="px-6 py-4" style="color: #333333;">{{ $atencion->tema?->nombre ?? 'Sin tema' }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                                             <a href="{{ route('atenciones.show', $atencion) }}" class="text-green-600 hover:text-green-900 mr-3">Ver</a>
                                             <a href="{{ route('atenciones.edit', $atencion) }}" class="text-blue-600 hover:text-blue-900 mr-3">Editar</a>

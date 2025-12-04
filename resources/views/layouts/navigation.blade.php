@@ -1,18 +1,18 @@
 <nav x-data="{ open: false }" class="bg-white border-b shadow-sm" style="border-color: #800000;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
-            <div class="flex">
+            <div class="flex items-center">
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="font-bold text-xl" style="color: #800000;">
-                        Sistema Consejería UPT
+                        Sistema de Asesoría y Tutoría
                     </a>
                 </div>
 
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" style="color: #333333;">
+                <div class="flex space-x-8 ms-10">
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard') || request()->routeIs('admin.dashboard') || request()->routeIs('docente.dashboard') || request()->routeIs('estudiante.dashboard')" style="color: #333333;">
                         Dashboard
                     </x-nav-link>
-                    
+
                     @if(Auth::user()->isAdmin())
                         <x-nav-link :href="route('atenciones.index')" :active="request()->routeIs('atenciones.*')" style="color: #333333;">
                             Atenciones
@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="flex items-center ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md hover:text-gray-700 focus:outline-none transition ease-in-out duration-150" style="color: #333333;">
@@ -87,7 +87,7 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 Dashboard
             </x-responsive-nav-link>
-            
+
             @if(Auth::user()->isAdmin())
                 <x-responsive-nav-link :href="route('atenciones.index')" :active="request()->routeIs('atenciones.*')">
                     Atenciones

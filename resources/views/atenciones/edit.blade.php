@@ -23,7 +23,7 @@
 
                             <div>
                                 <label for="fecha" class="block text-sm font-medium mb-2" style="color: #333333;">Fecha</label>
-                                <input type="date" name="fecha" id="fecha" value="{{ old('fecha', $atencion->fecha->format('Y-m-d')) }}" class="w-full border-gray-300 rounded-md shadow-sm @error('fecha') border-red-500 @enderror">
+                                <input type="date" name="fecha" id="fecha" value="{{ old('fecha', $atencion->fecha ? $atencion->fecha->format('Y-m-d') : '') }}" class="w-full border-gray-300 rounded-md shadow-sm @error('fecha') border-red-500 @enderror">
                                 @error('fecha')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror

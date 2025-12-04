@@ -14,15 +14,15 @@ class AtencionController extends Controller
     public function index(Request $request)
     {
         $query = Atencion::with(['docente', 'estudiante', 'tema']);
-        
+
         // Filtrar según rol del usuario
         $user = auth()->user();
-        if ($user->isDocente()) {
+        if ($user->isDocente() && $user->docente) {
             $query->where('docente_id', $user->docente->id);
-        } elseif ($user->isEstudiante()) {
+        } elseif ($user->isEstudiante() && $user->estudiante) {
             $query->where('estudiante_id', $user->estudiante->id);
         }
-        
+
         if ($request->semestre) {
             $query->where('semestre', $request->semestre);
         }
@@ -32,7 +32,7 @@ class AtencionController extends Controller
         if ($request->fecha_hasta) {
             $query->where('fecha', '<=', $request->fecha_hasta);
         }
-        
+
         $atenciones = $query->latest()->paginate(10);
         return view('atenciones.index', compact('atenciones'));
     }

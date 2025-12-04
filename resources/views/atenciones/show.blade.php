@@ -15,11 +15,11 @@
                             <div class="space-y-2">
                                 <div>
                                     <span class="font-medium" style="color: #333333;">Semestre:</span>
-                                    <span class="text-gray-700">{{ $atencion->semestre }}</span>
+                                    <span class="text-gray-700">{{ $atencion->semestre ?? 'No especificado' }}</span>
                                 </div>
                                 <div>
                                     <span class="font-medium" style="color: #333333;">Fecha:</span>
-                                    <span class="text-gray-700">{{ $atencion->fecha->format('d/m/Y') }}</span>
+                                    <span class="text-gray-700">{{ $atencion->fecha ? $atencion->fecha->format('d/m/Y') : 'No especificada' }}</span>
                                 </div>
                                 <div>
                                     <span class="font-medium" style="color: #333333;">Hora:</span>
@@ -33,15 +33,15 @@
                             <div class="space-y-2">
                                 <div>
                                     <span class="font-medium" style="color: #333333;">Docente:</span>
-                                    <span class="text-gray-700">{{ $atencion->docente->nombres }} {{ $atencion->docente->apellidos }}</span>
+                                    <span class="text-gray-700">{{ $atencion->docente?->nombres ?? 'N/A' }} {{ $atencion->docente?->apellidos ?? '' }}</span>
                                 </div>
                                 <div>
                                     <span class="font-medium" style="color: #333333;">Estudiante:</span>
-                                    <span class="text-gray-700">{{ $atencion->estudiante->nombres }} {{ $atencion->estudiante->apellidos }}</span>
+                                    <span class="text-gray-700">{{ $atencion->estudiante?->nombres ?? 'N/A' }} {{ $atencion->estudiante?->apellidos ?? '' }}</span>
                                 </div>
                                 <div>
                                     <span class="font-medium" style="color: #333333;">Código:</span>
-                                    <span class="text-gray-700">{{ $atencion->estudiante->codigo }}</span>
+                                    <span class="text-gray-700">{{ $atencion->estudiante?->codigo ?? 'N/A' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -49,7 +49,7 @@
 
                     <div class="mb-6">
                         <h3 class="font-semibold mb-2" style="color: #800000;">Tema</h3>
-                        <p class="text-gray-700">{{ $atencion->tema->nombre }}</p>
+                        <p class="text-gray-700">{{ $atencion->tema?->nombre ?? 'Sin tema' }}</p>
                     </div>
 
                     <div class="mb-6">

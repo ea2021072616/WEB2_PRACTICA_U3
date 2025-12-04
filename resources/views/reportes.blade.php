@@ -94,11 +94,11 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @forelse($atenciones as $atencion)
                                     <tr>
-                                        <td class="px-4 py-3 whitespace-nowrap text-sm" style="color: #333333;">{{ $atencion->semestre }}</td>
-                                        <td class="px-4 py-3 whitespace-nowrap text-sm" style="color: #333333;">{{ $atencion->fecha->format('d/m/Y') }}</td>
-                                        <td class="px-4 py-3 text-sm" style="color: #333333;">{{ $atencion->docente->nombres }} {{ $atencion->docente->apellidos }}</td>
-                                        <td class="px-4 py-3 text-sm" style="color: #333333;">{{ $atencion->estudiante->nombres }} {{ $atencion->estudiante->apellidos }}</td>
-                                        <td class="px-4 py-3 text-sm" style="color: #333333;">{{ $atencion->tema->nombre }}</td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm" style="color: #333333;">{{ $atencion->semestre ?? 'N/A' }}</td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm" style="color: #333333;">{{ $atencion->fecha ? $atencion->fecha->format('d/m/Y') : 'Sin fecha' }}</td>
+                                        <td class="px-4 py-3 text-sm" style="color: #333333;">{{ $atencion->docente?->nombres ?? 'N/A' }} {{ $atencion->docente?->apellidos ?? '' }}</td>
+                                        <td class="px-4 py-3 text-sm" style="color: #333333;">{{ $atencion->estudiante?->nombres ?? 'N/A' }} {{ $atencion->estudiante?->apellidos ?? '' }}</td>
+                                        <td class="px-4 py-3 text-sm" style="color: #333333;">{{ $atencion->tema?->nombre ?? 'Sin tema' }}</td>
                                     </tr>
                                 @empty
                                     <tr>

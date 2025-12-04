@@ -1,8 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl leading-tight" style="color: #800000;">
-            {{ __('Panel de Estudiante') }}
+        <h2 class="font-semibold text-xl leading-tight text-white">
+            Ficha de Registro de Atenciones de Asesoría y Tutoría
         </h2>
+        <p class="text-sm text-red-200 mt-1">Panel de Estudiante</p>
     </x-slot>
 
     <div class="py-12">
@@ -29,11 +30,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <span class="font-semibold" style="color: #800000;">Código:</span>
-                        <span style="color: #333333;">{{ auth()->user()->estudiante->codigo }}</span>
+                        <span style="color: #333333;">{{ auth()->user()->estudiante?->codigo ?? 'N/A' }}</span>
                     </div>
                     <div>
                         <span class="font-semibold" style="color: #800000;">Nombre:</span>
-                        <span style="color: #333333;">{{ auth()->user()->estudiante->nombres }} {{ auth()->user()->estudiante->apellidos }}</span>
+                        <span style="color: #333333;">{{ auth()->user()->estudiante?->nombres ?? 'N/A' }} {{ auth()->user()->estudiante?->apellidos ?? '' }}</span>
                     </div>
                     <div>
                         <span class="font-semibold" style="color: #800000;">Email:</span>
@@ -99,10 +100,10 @@
                         <tbody>
                             @forelse($atenciones_recientes as $atencion)
                             <tr class="border-b">
-                                <td class="px-4 py-2" style="color: #333333;">{{ $atencion->fecha->format('d/m/Y') }}</td>
+                                <td class="px-4 py-2" style="color: #333333;">{{ $atencion->fecha ? $atencion->fecha->format('d/m/Y') : 'Sin fecha' }}</td>
                                 <td class="px-4 py-2" style="color: #333333;">{{ $atencion->hora ? $atencion->hora->format('H:i') : '--:--' }}</td>
-                                <td class="px-4 py-2" style="color: #333333;">{{ $atencion->docente->nombres }} {{ $atencion->docente->apellidos }}</td>
-                                <td class="px-4 py-2" style="color: #333333;">{{ $atencion->tema->nombre }}</td>
+                                <td class="px-4 py-2" style="color: #333333;">{{ $atencion->docente?->nombres ?? 'N/A' }} {{ $atencion->docente?->apellidos ?? '' }}</td>
+                                <td class="px-4 py-2" style="color: #333333;">{{ $atencion->tema?->nombre ?? 'Sin tema' }}</td>
                                 <td class="px-4 py-2">
                                     <a href="{{ route('atenciones.show', $atencion->id) }}" class="px-3 py-1 rounded text-white text-sm" style="background-color: #800000;">Ver Detalles</a>
                                 </td>
