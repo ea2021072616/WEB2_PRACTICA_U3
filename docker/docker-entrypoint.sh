@@ -97,30 +97,31 @@ php artisan storage:link || true
 
 # Verificar assets de Vite
 echo "📦 Checking Vite assets..."
+
+# Primero verificar si existe en .vite/ y copiarlo
+if [ -f "/var/www/html/public/build/.vite/manifest.json" ] && [ ! -f "/var/www/html/public/build/manifest.json" ]; then
+    echo "📋 Copying manifest from .vite/ directory..."
+    cp /var/www/html/public/build/.vite/manifest.json /var/www/html/public/build/manifest.json
+    echo "✅ Manifest copied successfully"
+fi
+
 if [ ! -f "/var/www/html/public/build/manifest.json" ]; then
     echo "❌ Vite manifest not found at /var/www/html/public/build/manifest.json"
     echo "🔍 Debug info:"
     echo "   - Checking /var/www/html/public/build/ directory:"
-    ls -la /var/www/html/public/build/ || echo "   - Directory doesn't exist"
+    ls -la /var/www/html/public/build/ 2>/dev/null || echo "   - Directory doesn't exist"
+    echo "   - Checking .vite subdirectory:"
+    ls -la /var/www/html/public/build/.vite/ 2>/dev/null || echo "   - .vite directory doesn't exist"
     echo "   - Checking public directory:"
-    ls -la /var/www/html/public/ || echo "   - Public directory doesn't exist"
-    echo "   - Current working directory: $(pwd)"
-    echo "   - Attempting to rebuild assets..."
+    ls -la /var/www/html/public/ 2>/dev/null || echo "   - Public directory doesn't exist"
     
-    # Intentar regenerar assets si npm está disponible
-    if command -v npm >/dev/null 2>&1; then
-        echo "📦 NPM found, attempting to rebuild assets..."
-        npm run build || echo "❌ Failed to rebuild assets with npm"
-    else
-        echo "⚠️  NPM not available in production container"
-        echo "⚠️  Assets should be pre-built during Docker image creation"
-        echo "🔧 Creating minimal manifest.json as fallback..."
-        
-        # Crear directorio build si no existe
-        mkdir -p /var/www/html/public/build/assets
-        
-        # Crear un manifest mínimo para evitar el error
-        cat > /var/www/html/public/build/manifest.json << 'EOF'
+    echo "🔧 Creating minimal manifest.json as fallback..."
+    
+    # Crear directorio build si no existe
+    mkdir -p /var/www/html/public/build/assets
+    
+    # Crear un manifest mínimo para evitar el error
+    cat > /var/www/html/public/build/manifest.json << 'EOF'
 {
   "resources/css/app.css": {
     "file": "assets/app.css",
@@ -134,18 +135,18 @@ if [ ! -f "/var/www/html/public/build/manifest.json" ]; then
   }
 }
 EOF
-        
-        # Crear archivos CSS y JS básicos
-        echo "/* Emergency CSS fallback */" > /var/www/html/public/build/assets/app.css
-        echo "/* Emergency JS fallback */" > /var/www/html/public/build/assets/app.js
-        
-        echo "✅ Emergency fallback manifest created"
-    fi
+    
+    # Crear archivos CSS y JS básicos si no existen
+    [ ! -f /var/www/html/public/build/assets/app.css ] && echo "/* Fallback CSS */" > /var/www/html/public/build/assets/app.css
+    [ ! -f /var/www/html/public/build/assets/app.js ] && echo "/* Fallback JS */" > /var/www/html/public/build/assets/app.js
+    
+    echo "✅ Fallback manifest created"
 else
     echo "✅ Vite manifest found"
-    echo "   - Manifest size: $(stat -c%s /var/www/html/public/build/manifest.json) bytes"
-    echo "   - Checking assets directory:"
-    ls -la /var/www/html/public/build/assets/ || echo "   - Assets directory missing"
+    echo "   - Manifest location: /var/www/html/public/build/manifest.json"
+    echo "   - Manifest size: $(stat -c%s /var/www/html/public/build/manifest.json 2>/dev/null || echo 'unknown') bytes"
+    echo "   - Assets directory contents:"
+    ls -la /var/www/html/public/build/assets/ 2>/dev/null || echo "   - Assets directory missing"
 fi
 
 echo "✅ Laravel initialization completed!"

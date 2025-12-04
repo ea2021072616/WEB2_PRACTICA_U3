@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Http\Request;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,20 +20,30 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Forzar HTTPS en producción (para Render y otros servicios)
-        if (config('app.env') === 'production') {
+        // Forzar HTTPS en producción (para Render y otros servicios con proxy/load balancer)
+        // Detectamos por múltiples métodos para mayor compatibilidad
+        if ($this->isProduction() || $this->isBehindHttpsProxy()) {
             URL::forceScheme('https');
         }
+    }
 
-        // Confiar en proxies (necesario para Render, Heroku, etc.)
-        // Esto permite que Laravel detecte correctamente el protocolo y host
-        Request::setTrustedProxies(
-            ['*'],
-            Request::HEADER_X_FORWARDED_FOR |
-            Request::HEADER_X_FORWARDED_HOST |
-            Request::HEADER_X_FORWARDED_PORT |
-            Request::HEADER_X_FORWARDED_PROTO |
-            Request::HEADER_X_FORWARDED_AWS_ELB
-        );
+    /**
+     * Detecta si estamos en producción
+     */
+    private function isProduction(): bool
+    {
+        return config('app.env') === 'production' 
+            || env('APP_ENV') === 'production'
+            || !empty(env('RENDER'));  // Variable de Render
+    }
+
+    /**
+     * Detecta si estamos detrás de un proxy HTTPS (Render, Heroku, etc.)
+     */
+    private function isBehindHttpsProxy(): bool
+    {
+        return (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+            || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+            || (isset($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] === 'on');
     }
 }

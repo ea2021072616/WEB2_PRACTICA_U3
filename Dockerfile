@@ -59,6 +59,12 @@ RUN echo "=== Files before build ===" && \
 # Compilar assets con Vite
 RUN npm run build
 
+# Copiar manifest de .vite/ a la raíz de build (Laravel lo busca ahí)
+RUN if [ -f public/build/.vite/manifest.json ]; then \
+        cp public/build/.vite/manifest.json public/build/manifest.json && \
+        echo "✅ Manifest copied from .vite/ to build/"; \
+    fi
+
 # Debug: Verificar archivos después del build
 RUN echo "=== Files after build ===" && \
     ls -la public/build/ && \
