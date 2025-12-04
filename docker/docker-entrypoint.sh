@@ -65,6 +65,10 @@ php artisan cache:clear || true
 php artisan view:clear || true
 php artisan route:clear || true
 
+# Limpiar sesiones antiguas de la base de datos (evita URLs malformadas guardadas)
+echo "🧹 Clearing old sessions from database..."
+php artisan tinker --execute="DB::table('sessions')->truncate();" 2>/dev/null || echo "Could not clear sessions"
+
 # Optimizar para producción (SIN cache de rutas para evitar problemas de URL)
 if [ "$APP_ENV" = "production" ]; then
     echo "⚡ Optimizing for production..."

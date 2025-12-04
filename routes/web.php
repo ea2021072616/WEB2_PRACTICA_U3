@@ -14,6 +14,24 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// DEBUG TEMPORAL - Ver qué URLs se generan
+Route::get('/debug-urls', function () {
+    return response()->json([
+        'app_url' => config('app.url'),
+        'request_url' => request()->url(),
+        'request_root' => request()->root(),
+        'route_dashboard' => route('dashboard'),
+        'url_to_dashboard' => url('/dashboard'),
+        'env' => app()->environment(),
+        'https' => request()->secure(),
+        'headers' => [
+            'host' => request()->header('host'),
+            'x-forwarded-proto' => request()->header('x-forwarded-proto'),
+            'x-forwarded-host' => request()->header('x-forwarded-host'),
+        ]
+    ]);
+});
+
 Route::middleware(['auth', 'verified', 'upt.email'])->group(function () {
     // RUTA TEMPORAL PARA DEBUG - ELIMINAR DESPUÉS
     Route::get('/verificar-rol', function () {
