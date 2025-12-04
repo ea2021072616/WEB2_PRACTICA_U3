@@ -20,30 +20,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Forzar HTTPS en producción (para Render y otros servicios con proxy/load balancer)
-        // Detectamos por múltiples métodos para mayor compatibilidad
-        if ($this->isProduction() || $this->isBehindHttpsProxy()) {
+        // Para Render y otros servicios de hosting, detectar HTTPS del proxy
+        $forwardedProto = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? null;
+        $isHttps = $forwardedProto === 'https' 
+            || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');
+        
+        // Solo forzar scheme, NO forzar root URL (dejar que Laravel lo detecte)
+        if ($isHttps) {
             URL::forceScheme('https');
         }
-    }
-
-    /**
-     * Detecta si estamos en producción
-     */
-    private function isProduction(): bool
-    {
-        return config('app.env') === 'production' 
-            || env('APP_ENV') === 'production'
-            || !empty(env('RENDER'));  // Variable de Render
-    }
-
-    /**
-     * Detecta si estamos detrás de un proxy HTTPS (Render, Heroku, etc.)
-     */
-    private function isBehindHttpsProxy(): bool
-    {
-        return (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
-            || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
-            || (isset($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] === 'on');
     }
 }
