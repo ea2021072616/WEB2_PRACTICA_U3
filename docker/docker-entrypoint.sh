@@ -65,11 +65,12 @@ php artisan cache:clear || true
 php artisan view:clear || true
 php artisan route:clear || true
 
-# Optimizar para producción
+# Optimizar para producción (SIN cache de rutas para evitar problemas de URL)
 if [ "$APP_ENV" = "production" ]; then
     echo "⚡ Optimizing for production..."
     php artisan config:cache
-    php artisan route:cache
+    # NO cachear rutas - se generarán dinámicamente con la URL correcta
+    # php artisan route:cache  
     php artisan view:cache
 fi
 

@@ -32,11 +32,11 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => [
-                'required', 
-                'string', 
-                'lowercase', 
-                'email', 
-                'max:255', 
+                'required',
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
                 'unique:'.User::class,
                 function ($attribute, $value, $fail) {
                     if (!str_ends_with($value, '@upt.pe') && !str_ends_with($value, '@virtual.upt.pe')) {
