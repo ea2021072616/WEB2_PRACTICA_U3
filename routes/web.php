@@ -8,6 +8,7 @@ use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\DocenteController;
 use App\Http\Controllers\TemaController;
 use App\Http\Controllers\AtencionController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -17,7 +18,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified', 'upt.email'])->group(function () {
     // Redirigir dashboard según el rol
     Route::get('/dashboard', function () {
-        $user = auth()->user();
+        $user = Auth::user();
         if ($user->isAdmin()) {
             return redirect()->route('admin.dashboard');
         } elseif ($user->isDocente()) {
@@ -51,6 +52,7 @@ Route::middleware(['auth', 'verified', 'upt.email'])->group(function () {
     Route::middleware(['role:estudiante'])->group(function () {
         Route::get('/estudiante/dashboard', [EstudianteDashboardController::class, 'index'])->name('estudiante.dashboard');
         Route::get('/mis-atenciones', [AtencionController::class, 'index'])->name('estudiante.atenciones');
+        Route::get('/mis-atenciones/{atencion}', [AtencionController::class, 'show'])->name('estudiante.atenciones.show');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

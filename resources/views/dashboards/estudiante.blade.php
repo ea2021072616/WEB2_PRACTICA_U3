@@ -105,7 +105,7 @@
                                 <td class="px-4 py-2" style="color: #333333;">{{ $atencion->docente?->nombres ?? 'N/A' }} {{ $atencion->docente?->apellidos ?? '' }}</td>
                                 <td class="px-4 py-2" style="color: #333333;">{{ $atencion->tema?->nombre ?? 'Sin tema' }}</td>
                                 <td class="px-4 py-2">
-                                    <a href="{{ route('atenciones.show', $atencion->id) }}" class="px-3 py-1 rounded text-white text-sm" style="background-color: #800000;">Ver Detalles</a>
+                                    <a href="{{ route('estudiante.atenciones.show', $atencion->id) }}" class="px-3 py-1 rounded text-white text-sm" style="background-color: #800000;">Ver Detalles</a>
                                 </td>
                             </tr>
                             @empty

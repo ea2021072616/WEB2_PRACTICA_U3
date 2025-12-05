@@ -69,6 +69,14 @@ class AtencionController extends Controller
 
     public function show(Atencion $atencion)
     {
+        // Verificar que el estudiante solo pueda ver sus propias atenciones
+        $user = auth()->user();
+        if ($user->isEstudiante() && $user->estudiante) {
+            if ($atencion->estudiante_id !== $user->estudiante->id) {
+                abort(403, 'No tienes permiso para ver esta atención.');
+            }
+        }
+
         $atencion->load(['docente', 'estudiante', 'tema']);
         return view('atenciones.show', compact('atencion'));
     }

@@ -72,8 +72,12 @@
                     @endif
 
                     <div class="flex justify-end gap-2">
-                        <a href="{{ route('atenciones.index') }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Volver</a>
-                        <a href="{{ route('atenciones.edit', $atencion) }}" class="px-4 py-2 text-white rounded-md" style="background-color: #800000;">Editar</a>
+                        @if(auth()->user()->role === 'estudiante')
+                            <a href="{{ route('estudiante.atenciones') }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Volver</a>
+                        @else
+                            <a href="{{ route('atenciones.index') }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Volver</a>
+                            <a href="{{ route('atenciones.edit', $atencion) }}" class="px-4 py-2 text-white rounded-md" style="background-color: #800000;">Editar</a>
+                        @endif
                     </div>
                 </div>
             </div>
